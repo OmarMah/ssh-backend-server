@@ -3,3 +3,4 @@ uvicorn
 python-dotenv
 fastapi-mail
 pydantic
+aiofiles
