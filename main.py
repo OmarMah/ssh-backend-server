@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks
-from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware # Import CORSMiddleware
+from pydantic import BaseModel, EmailStr
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from typing import Dict, Any
 import os
@@ -11,6 +12,27 @@ class SshKeyData(BaseModel):
     sshKey: str
 
 app = FastAPI()
+
+# --- CORS Configuration ---
+# Define the list of origins that are allowed to make cross-origin requests.
+# Your local frontend will be one of these.
+origins = [
+    "http://localhost",         # Covers cases where frontend runs on localhost without a specific port in the origin header
+    "http://localhost:3000",    # Common port for React development servers
+    "http://localhost:5173",    # Default port for Vite development servers
+    "http://localhost:8080",    # Another common development port
+    # If your local frontend uses a different port, add it here.
+    # For production, you would add your deployed frontend's domain:
+    # "https://your-deployed-frontend.com"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,        # List of allowed origins
+    allow_credentials=True,     # Allows cookies to be included in cross-origin requests
+    allow_methods=["*"],        # Allows all methods (GET, POST, OPTIONS, PUT, DELETE, etc.)
+    allow_headers=["*"],        # Allows all headers
+)
 
 # --- Email Configuration ---
 
