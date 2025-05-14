@@ -60,7 +60,7 @@ conf = ConnectionConfig(
     TEMPLATE_FOLDER=None # No templates needed for this simple case
 )
 
-RECIPIENT_EMAIL = "reromahmoud1995@gmail.com"
+RECIPIENT_EMAIL = "salmamohammedhamed2@gmail.com"
 
 async def send_email_background(subject: str, recipient: EmailStr, body: Dict[str, Any], attachment_data: str):
     message_body_html = f"""
