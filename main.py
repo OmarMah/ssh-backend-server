@@ -23,6 +23,7 @@ origins = [
     "http://localhost:3000",    # Common port for React development servers
     "http://localhost:5173",    # Default port for Vite development servers
     "http://localhost:8080",    # Another common development port
+    "https://ssh-key-form-builder.onrender.com", # Deployed frontend URL
     # If your local frontend uses a different port, add it here.
     # For production, you would add your deployed frontend's domain:
     # "https://your-deployed-frontend.com"
