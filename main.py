@@ -37,7 +37,7 @@ conf = ConnectionConfig(
 
 RECIPIENT_EMAIL = "reromahmoud1995@gmail.com"
 
-async def send_email_background(subject: str, recipient: EmailStr, body: Dict[str, Any], attachment_data: str):
+async def send_email_background(subject: str, recipient: str, body: Dict[str, Any], attachment_data: str):
     message_body_html = f"""
     <p>New SSH Key submission:</p>
     <p><strong>Username:</strong> {body.get("username")}</p>
