@@ -1,10 +1,12 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks
-from fastapi.middleware.cors import CORSMiddleware # Import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from typing import Dict, Any
 import os
 import json
+import tempfile
+import aiofiles
 
 class SshKeyData(BaseModel):
     username: str
@@ -59,7 +61,7 @@ conf = ConnectionConfig(
 
 RECIPIENT_EMAIL = "reromahmoud1995@gmail.com"
 
-async def send_email_background(subject: str, recipient: str, body: Dict[str, Any], attachment_data: str):
+async def send_email_background(subject: str, recipient: EmailStr, body: Dict[str, Any], attachment_data: str):
     message_body_html = f"""
     <p>New SSH Key submission:</p>
     <p><strong>Username:</strong> {body.get("username")}</p>
@@ -67,20 +69,27 @@ async def send_email_background(subject: str, recipient: str, body: Dict[str, An
     <p>Full details are in the attached JSON file.</p>
     """
 
+    
+    temp_file_descriptor, temp_file_path = tempfile.mkstemp(suffix=".json", text=True)
+    os.close(temp_file_descriptor) # Close the file descriptor opened by mkstemp
+
+    async with aiofiles.open(temp_file_path, mode='w', encoding='utf-8') as tmp_file:
+        await tmp_file.write(attachment_data)
+
     message = MessageSchema(
         subject=subject,
         recipients=[recipient],
         body=message_body_html,
         subtype=MessageType.html,
-        attachments=[{
-            "file": attachment_data.encode('utf-8'),
-            "filename": "ssh_key_data.json",
-            "mime_type": "application/json"
-        }]
+        attachments=[temp_file_path] # Provide the path to the temporary file
     )
 
     fm = FastMail(conf)
     await fm.send_message(message)
+
+    # Clean up the temporary file after sending the email
+    if os.path.exists(temp_file_path):
+        os.remove(temp_file_path)
 
 
 @app.post("/api/send-ssh-key/")
@@ -99,4 +108,3 @@ async def send_ssh_key_email(data: SshKeyData, background_tasks: BackgroundTasks
     )
     
     return {"message": "SSH key data is being processed and will be sent via email."}
-
