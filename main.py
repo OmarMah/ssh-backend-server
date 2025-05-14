@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, BackgroundTasks
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from typing import Dict, Any
 import os
@@ -7,7 +7,7 @@ import json
 
 class SshKeyData(BaseModel):
     username: str
-    email: EmailStr
+    email: str
     sshKey: str
 
 app = FastAPI()
@@ -16,7 +16,7 @@ app = FastAPI()
 
 MAIL_USERNAME = os.getenv("MAIL_USERNAME", "your-email@example.com")
 MAIL_PASSWORD = os.getenv("MAIL_PASSWORD", "your-email-password")
-MAIL_FROM = EmailStr(os.getenv("MAIL_FROM", "your-email@example.com"))
+MAIL_FROM = os.getenv("MAIL_FROM", "your-email@example.com")
 MAIL_PORT = int(os.getenv("MAIL_PORT", 587))
 MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.example.com")
 MAIL_STARTTLS = os.getenv("MAIL_STARTTLS", "True").lower() == "true"
